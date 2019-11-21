@@ -16,14 +16,15 @@ class RamenProvider extends ServiceProvider {
             claim: claim,
             token: token
         }
+        console.log(authUrl, body)
 
-        try {
-            const { data } = await axios.post(authUrl, body)
-            return data.data
-        }
-        catch(error) {
-            return
-        }
+        // try {
+        //     const { data } = await axios.post(authUrl, body)
+        //     return data.data
+        // }
+        // catch(error) {
+        //     return
+        // }
     })
   }
 
@@ -32,6 +33,8 @@ class RamenProvider extends ServiceProvider {
           const RamenQueryResolver = require('../src/RamenQueryResolver')
           return new RamenQueryResolver()
       })
+
+      this.app.alias('Adonis/Addons/Ramen', 'Ramen')
   }
 }
 
