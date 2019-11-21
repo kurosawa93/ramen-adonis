@@ -6,7 +6,7 @@ class RamenProvider extends ServiceProvider {
     const Request = use('Adonis/Src/Request')
     const Config = use('Adonis/Src/Config')
 
-    Request.macro('validate', function () {
+    Request.macro('validate', async function () {
         const authUrl = Config._config.ramen.authUrl
         let claim = this.url()
         let token = this.header('Authorization')
