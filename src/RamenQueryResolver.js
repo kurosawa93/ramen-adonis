@@ -1,6 +1,8 @@
 'use strict'
 
 class RamenQueryResolver {
+  constructor() {}
+  
   static resolveRelations(builder, input) {
     let relations = input.split(',')
     relations.forEach(relationElement => {
