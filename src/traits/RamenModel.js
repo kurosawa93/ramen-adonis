@@ -65,13 +65,10 @@ class RamenModel {
             await genericModel[relation.name]().sync(relationData, trx)
             return
           default:
-            await genericModel.load(relation.name)
-            let relationObj = genericModel.getRelated(relation.name)
+            let relationObj = await genericModel[relation.name]().fetch()
             if (!relationObj) {
               try {
-                relationObj = relation.object
-                relationObj = await relationObj.create(relationData, trx)
-                await genericModel[relation.name]().save(relationObj, trx)
+                await genericModel[relation.name]().create(relationData, trx)
                 continue
               }
               catch (error) {
@@ -79,9 +76,9 @@ class RamenModel {
               }
             }
 
-            for (key in relationData) {
+            Object.keys(relationData).forEach(key => {
               relationObj[key] = relationData[key]
-            }
+            })
 
             try {
               await relationObj.save(trx)
