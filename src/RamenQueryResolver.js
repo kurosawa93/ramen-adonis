@@ -3,11 +3,11 @@
 class RamenQueryResolver {
   constructor() {}
   
-  static resolveRelations(builder, input) {
+  resolveRelations(builder, input) {
     let relations = input.split(',')
     relations.forEach(relationElement => {
       if (relationElement.includes('^')) {
-        QueryResolver.resolveQueryRelations(builder, relationElement)
+        this.resolveQueryRelations(builder, relationElement)
       }
       else {
         builder.with(relationElement)
@@ -16,7 +16,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  static resolveQueryRelations(builder, input) {
+  resolveQueryRelations(builder, input) {
     let relationQuery = input.split('^')
     let relationName = relationQuery[0]
     relationQuery = relationQuery[1]
@@ -27,33 +27,33 @@ class RamenQueryResolver {
       queryObject.forEach(objectElement => {
         objectElement = objectElement.split('=')
         builder.whereHas(relationName, (builder) => {
-          QueryResolver.resolveWhere(builder, objectElement[0], objectElement[1])
+          this.resolveWhere(builder, objectElement[0], objectElement[1])
         })
       })
     })
     return builder
   }
 
-  static resolveOrderBy(builder, orderBy, direction) {
+  resolveOrderBy(builder, orderBy, direction) {
     builder.orderBy(orderBy, direction)
     return builder
   }
 
-  static resolveWhere(builder, columnName, compareWith) {
+  resolveWhere(builder, columnName, compareWith) {
     let operatorFirstPriority = ['>=', '<=', '!=']
     let operatorSecondPriority = ['<', '>']
 
     if (compareWith.includes('|')) {
-      QueryResolver.resolveOr(builder, columnName, compareWith)
+      this.resolveOr(builder, columnName, compareWith)
     }
     else if (compareWith.includes('<>') && compareWith.includes('|')) {
-      QueryResolver.resolveOrBetween(builder, columnName, compareWith)
+      this.resolveOrBetween(builder, columnName, compareWith)
     }
     else if (compareWith.includes('<>')) {
-      QueryResolver.resolveAndBetween(builder, columnName, compareWith)
+      this.resolveAndBetween(builder, columnName, compareWith)
     }
     else if (compareWith.includes('%')) {
-      QueryResolver.resolveLike(builder, columnName, compareWith)
+      this.resolveLike(builder, columnName, compareWith)
     }
     else {
       let specialOperator = false
@@ -71,7 +71,7 @@ class RamenQueryResolver {
       })
 
       if (specialOperator) {
-        QueryResolver.resolveWhereWithOperator(builder, specialOperator, columnName, compareWith)
+        this.resolveWhereWithOperator(builder, specialOperator, columnName, compareWith)
       }
       else {
         builder.where(columnName, compareWith)
@@ -79,7 +79,7 @@ class RamenQueryResolver {
     }
   }
 
-  static resolveOr(builder, columnName, value) {
+  resolveOr(builder, columnName, value) {
     value = value.replace('|', '')
     builder.orWhere((builder) => {
       builder.orWhere(columnName, value)
@@ -87,7 +87,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  static resolveOrBetween(builder, columnName, value) {
+  resolveOrBetween(builder, columnName, value) {
     value = value.split('<>')
     builder.orWhere((builder) => {
       builder.orWhere(columnName, '>', value[0].replace('|', ''))
@@ -96,7 +96,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  static resolveAndBetween(builder, columnName, value) {
+  resolveAndBetween(builder, columnName, value) {
     value = value.split('<>')
     builder.where((builder) => {
       builder.orWhere(columnName, '>', value[0])
@@ -105,12 +105,12 @@ class RamenQueryResolver {
     return builder
   }
 
-  static resolveLike(builder, columnName, value) {
+  resolveLike(builder, columnName, value) {
     builder.where(columnName, 'LIKE', value)
     return builder
   }
 
-  static resolveWhereWithOperator(builder, operator, columnName, value) {
+  resolveWhereWithOperator(builder, operator, columnName, value) {
     builder.where(columnName, operator, value)
     return builder
   }
