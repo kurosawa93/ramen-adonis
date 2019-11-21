@@ -1,6 +1,6 @@
 'use strict'
 
-const QueryResolver = use('Ramen')
+const QueryResolver = use('RamenQueryResolver')
 const Database = use('Database')
 
 class RamenModel {

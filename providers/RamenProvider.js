@@ -28,12 +28,10 @@ class RamenProvider extends ServiceProvider {
   }
 
   register() {
-      this.app.singleton('Adonis/Addons/Ramen', (app) => {
+      this.app.singleton('RamenQueryResolver', (app) => {
           const RamenQueryResolver = require('../src/RamenQueryResolver')
           return new RamenQueryResolver()
       })
-
-      this.app.alias('Adonis/Addons/Ramen', 'Ramen')
   }
 }
 
