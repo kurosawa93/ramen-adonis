@@ -1,4 +1,4 @@
-const { ServiceProvider } = require.main.require('@adonisjs/fold')
+const { ServiceProvider } = require('@adonisjs/fold')
 const axios = require('axios')
 
 class RamenProvider extends ServiceProvider {
