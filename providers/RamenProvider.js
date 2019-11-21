@@ -7,7 +7,7 @@ class RamenProvider extends ServiceProvider {
     const Config = use('Adonis/Src/Config')
 
     Request.macro('validate', function () {
-        const authUrl = Config.ramen.authUrl
+        const authUrl = Config._config.ramen.authUrl
         let claim = this.url()
         let token = this.header('Authorization')
         token = token.split(' ')
@@ -16,15 +16,14 @@ class RamenProvider extends ServiceProvider {
             claim: claim,
             token: token
         }
-        console.log(authUrl, body)
 
-        // try {
-        //     const { data } = await axios.post(authUrl, body)
-        //     return data.data
-        // }
-        // catch(error) {
-        //     return
-        // }
+        try {
+            const { data } = await axios.post(authUrl, body)
+            return data.data
+        }
+        catch(error) {
+            return
+        }
     })
   }
 
