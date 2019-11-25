@@ -1,6 +1,7 @@
 'use strict'
 
 const AuthUtil = require('../utils/RamenAuthUtil')
+const crypto = require('crypto')
 const Config = use('Adonis/Src/Config')
 
 class AuthController {
