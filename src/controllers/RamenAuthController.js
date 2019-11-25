@@ -29,7 +29,7 @@ class AuthController {
         let iv = encrypted.iv
         iv = Buffer.from(iv, 'base64')
 
-        const key = Buffer.from(Config._config.ramen.authUrl, 'base64')
+        const key = Buffer.from(Config._config.ramen.aesKey, 'base64')
         const decryptor = crypto.createDecipheriv("aes-256-cbc", key, iv)
         let decrypted = decryptor.update(encrypted.value, 'base64', 'utf8')
         decrypted += decryptor.final('utf8')
