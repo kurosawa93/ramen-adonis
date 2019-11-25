@@ -1,6 +1,7 @@
 'use strict'
 
 const AuthUtil = require('../utils/RamenAuthUtil')
+const Config = use('Adonis/Src/Config')
 
 class AuthController {
     constructor(model) {
@@ -11,6 +12,30 @@ class AuthController {
         const email = request.body.email
         const password = request.body.password
         const account = await AuthUtil.basicAuthenticate(auth, this.model, email, password)
+        return response.status(200).send({
+            data: account,
+            meta: {
+                message: 'login is successfull'
+            }
+        })
+    }
+
+    async aesLogin({request, auth, response}) {
+        let encrypted = request.body.payload
+        encrypted = Buffer.from(encrypted, 'base64')
+        encrypted = encrypted.toString('utf8')
+        encrypted = JSON.parse(encrypted)
+
+        let iv = encrypted.iv
+        iv = Buffer.from(iv, 'base64')
+
+        const key = Buffer.from(Config._config.ramen.authUrl, 'base64')
+        const decryptor = crypto.createDecipheriv("aes-256-cbc", key, iv)
+        let decrypted = decryptor.update(encrypted.value, 'base64', 'utf8')
+        decrypted += decryptor.final('utf8')
+        decrypted = JSON.parse(decrypted)
+        
+        const account = await AuthUtil.basicAuthenticate(auth, this.model, decrypted.email, decrypted.password)
         return response.status(200).send({
             data: account,
             meta: {
