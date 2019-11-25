@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken')
 
 class RamenAuthUtil {
-    async authenticate(auth, model, email, password) {
+    static async basicAuthenticate(auth, model, email, password) {
         const credentials = await auth.withRefreshToken().attempt(email, password)
         let account = await model.query().where('email', email).first()
         account.token = credentials.token
@@ -11,11 +11,11 @@ class RamenAuthUtil {
         return account
     }
 
-    async generateToken(auth, model) {
+    static async generateToken(auth, model) {
         return await auth.withRefreshToken().generate(model)
     }
 
-    decodeToken(token) {
+    static decodeToken(token) {
         const appKey = process.env.APP_KEY
         try {
             const result = jwt.verify(token, appKey)

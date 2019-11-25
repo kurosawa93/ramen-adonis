@@ -10,7 +10,7 @@ class AuthController {
     async login({request, auth, response}) {
         const email = request.body.email
         const password = request.body.password
-        const account = await AuthUtil.authenticate(auth, email, password)
+        const account = await AuthUtil.basicAuthenticate(auth, email, password)
         return response.status(200).send({
             data: account,
             meta: {
