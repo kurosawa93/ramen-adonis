@@ -25,6 +25,15 @@ class RamenAuthUtil {
             return {error: {message: error.message}}
         }
     }
+
+    static async validateClaim(id, claim, model) {
+        const validAccount = await model.query().whereHas('roles.claims', (builder) => {
+            builder.where('endpoint', claim)
+        })
+        .where('id', id)
+        .first()
+        return validAccount
+    }
 }
 
 module.exports = RamenAuthUtil

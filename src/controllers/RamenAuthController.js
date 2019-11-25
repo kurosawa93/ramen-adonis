@@ -58,7 +58,7 @@ class AuthController {
     async verify({request, auth, response}) {
         const token = request.body.token
         const claim = request.body.claim
-        const decodedToken = Token.decodeToken(token)
+        const decodedToken = AuthUtil.decodeToken(token)
         if (decodedToken.error.message != null) {
             return response.status(403).send({
                 data: null,
@@ -67,7 +67,7 @@ class AuthController {
                 }
             })
         }
-        const account = await Account.validateClaim(decodedToken.data.uid, claim)
+        const account = await AuthUtil.validateClaim(decodedToken.data.uid, claim, this.model)
         if (account == null) {
             return response.status(403).send({
                 data: null,
