@@ -1,6 +1,6 @@
 'use strict'
 
-const QueryResolver = require('../RamenQueryResolver')
+const QueryResolver = use('RamenQueryResolver')
 const Database = use('Database')
 
 class RamenModel {
