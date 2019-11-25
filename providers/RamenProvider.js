@@ -37,6 +37,11 @@ class RamenProvider extends ServiceProvider {
           const RamenQueryResolver = require('../src/RamenQueryResolver')
           return new RamenQueryResolver()
       })
+
+      this.app.singleton('RamenModelTraits', (app) => {
+        const RamenModelTraits = require('../src/traits/RamenModel')
+        return new RamenModelTraits()
+      })
   }
 }
 
