@@ -1,10 +1,12 @@
 'use strict'
 
+const Env = use('Env')
+
 module.exports = {
-    provider: process.env.FILE_PROVIDER,
+    provider: Env.get('RAMEN_FILE_PROVIDER', 'google'),
     google: {
-        bucketName: process.env.GOOGLE_BUCKET_NAME,
-        projectId: process.env.GOOGLE_PROJECT_ID,
-        credentialsKey: process.env.GOOGLE_CREDENTIALS_FILE
+        bucketName: Env.get('GOOGLE_BUCKET_NAME'),
+        projectId: Env.get('GOOGLE_PROJECT_ID'),
+        credentialsKey: Env.get('GOOGLE_CREDENTIALS_FILE')
     }
 }
