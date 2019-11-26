@@ -3,23 +3,30 @@
 const FileProvider = use('RamenFileProvider')
 
 class RamenFileController {
+    constructor() {}
+
     async uploadFile({request, response}) {
         response.implicitEnd = false
         
-        const result =  await FileProvider.uploadFile(request)
-        if (result.error.message) {
+        await FileProvider.uploadFile(request, (data, err) => {
+            if (data) {
+                return response.status(200).send({
+                    data: {
+                        fileUrl: data
+                    },
+                    meta: {
+                        message: 'upload successfull'
+                    }
+                })
+            }
             return response.status(500).send({
                 data: null,
                 meta: {
-                    message: result.error.message
+                    message: err
                 }
             })
-        }
-        return response.status(200).send({
-            data: result.data,
-            meta: {
-                message: 'upload successfull'
-            }
         })
     }
 }
+
+module.exports = RamenFileController

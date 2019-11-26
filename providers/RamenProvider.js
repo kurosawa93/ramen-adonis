@@ -43,7 +43,6 @@ class RamenProvider extends ServiceProvider {
             return RamenAuthController
         })
 
-        const Helpers = use('Helpers')
         const Config = use('Adonis/Src/Config')
         const provider = Config._config.ramenfile.provider
         const options = Config._config.ramenfile.provider[provider]
@@ -55,10 +54,9 @@ class RamenProvider extends ServiceProvider {
         })
 
         this.app.singleton('RamenFileProvider', (app) => {
-            const RamenFileProvider = require('../src' + providerClass)
+            const RamenFileProvider = require('../src/' + providerClass)
             return new RamenFileProvider(options)
         })
-        const appRoot = Helpers.appRoot()
     }
 }
 

@@ -6,7 +6,6 @@ const Helpers = use('Helpers')
 class GoogleFileResolver {
     constructor(options) {
         const credentialsKey = Helpers.appRoot() + '/' + options.credentialsKey
-        console.log(credentialsKey)
         const storage = new Storage({
             projectId : options.projectId,
             keyFilename: credentialsKey
@@ -15,9 +14,9 @@ class GoogleFileResolver {
         this.bucket = storage.bucket(this.bucketName)
     }
 
-    async uploadFile(request) {
+    async uploadFile(request, callback) {
         let fileName = null
-        let error = null
+        let fileStream = null
 
         await request.multipart.file(
             'file', 
@@ -28,31 +27,19 @@ class GoogleFileResolver {
             }, 
             async (file) => {
                 const result = this.createFileStream(file)
-                const fileStream = result.stream
-
-                fileStream.on('error', function(err) {
-                    error = err
-                })
-                fileStream.on('finish', () => {
-                    fileName = this.getPublicUrl(result.name)
-                })
+                fileStream = result.stream
+                fileName = result.name
             }
         )
         .process()
 
-        if (error != null) {
-            return {
-                error: {
-                    message: error
-                }
-            }
-        }
-        return {
-            data: {
-                fileUrl: fileName
-            },
-            error: {}
-        }
+        fileStream.on('error', function(err) {
+            callback(null, err)
+        })
+        fileStream.on('finish', () => {
+            fileName = this.getPublicUrl(fileName)
+            callback(fileName, null)
+        })
     }
 
     createFileStream(file) {
