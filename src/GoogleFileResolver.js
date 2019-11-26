@@ -21,7 +21,6 @@ class GoogleFileResolver {
         await request.multipart.file(
             'file', 
             {
-                types: ['file'],
                 size: '10mb',
                 extnames: ['png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx']
             }, 
