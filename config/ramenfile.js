@@ -1,10 +1,10 @@
 'use strict'
 
 module.exports = {
-    provider: 'google',
+    provider: process.env.FILE_PROVIDER,
     google: {
-        bucketName: 'default-bucket',
-        projectId: 'default-project',
-        credentialsKey: 'your-credentials-key'
+        bucketName: process.env.GOOGLE_BUCKET_NAME,
+        projectId: process.env.GOOGLE_PROJECT_ID,
+        credentialsKey: process.env.GOOGLE_CREDENTIALS_FILE
     }
 }

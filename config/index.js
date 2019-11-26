@@ -1,7 +1,9 @@
 'use strict'
 
+const Env = use('Env')
+
 module.exports = {
-    authUrl: 'http://localhost:3333/api/auth/verify',
-    traitPath: '../../../node_modules/ramen-adonis/src/traits/RamenModel',
-    aesKey: 'YsYYCVq6PByLQvNVAsLZgUsmK9ymLjlckGU11Rozkr8='
+    authUrl: Env.get('RAMEN_AUTH_URL'),
+    traitPath: Env.get('RAMEN_TRAIT_PATH'),
+    aesKey: Env.get('RAMEN_AES_KEY')
 }
