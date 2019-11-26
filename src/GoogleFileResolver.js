@@ -26,6 +26,13 @@ class GoogleFileResolver {
                 extnames: ['png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx']
             }, 
             async (file) => {
+                await file.runValidations()
+                const error = file.error()
+                if (error.message) {
+                    callback(null, error.message)
+                    return
+                }
+
                 const result = this.createFileStream(file)
                 fileStream = result.stream
                 fileName = result.name
