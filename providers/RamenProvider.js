@@ -45,7 +45,7 @@ class RamenProvider extends ServiceProvider {
 
         const Config = use('Adonis/Src/Config')
         const provider = Config._config.ramenfile.provider
-        const options = Config._config.ramenfile.provider[provider]
+        const options = Config._config.ramenfile[provider]
         const providerClass = provider.charAt(0).toUpperCase() + provider.slice(1) + 'FileResolver'
 
         this.app.singleton('RamenFileController', (app) => {
