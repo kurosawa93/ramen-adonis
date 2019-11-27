@@ -78,20 +78,24 @@ class RamenModel {
               }
             }
 
-            let dataHelper = []
-            for(const relationalData of relationData) {
+            let dataHelper = {}
+            for(const relationalData of relationObjs.rows) {
               dataHelper[relationalData.id] = relationalData
             }
 
-            for (const relational of relationObjs.rows) {
-              const relationalData = dataHelper[relational.id]
-              Object.keys(relationalData).forEach(key => {
-                relational[key] = relationalData[key]
+            for (const data of relationData) {
+              if (!data.id) {
+                await genericModel[relation.name]().create(data, trx)
+                continue
+              }
+
+              const relationalData = dataHelper[data.id]
+              Object.keys(data).forEach(key => {
+                relationalData[key] = data[key]
               })
 
               try {
-                await relational.save(trx)
-                return
+                await relationalData.save(trx)
               }
               catch(error) {
                 return 'POSTGRESQL ERROR. ' + error.message
