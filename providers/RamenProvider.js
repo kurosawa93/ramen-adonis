@@ -7,6 +7,11 @@ class RamenProvider extends ServiceProvider {
         const Config = use('Adonis/Src/Config')
     
         Request.macro('validate', async function (response) {
+            const validationEnabled = Config._config.ramen.validationEnabled
+            if (!validationEnabled) {
+                return
+            }
+            
             const authUrl = Config._config.ramen.authUrl
             let claim = this.url()
             let token = this.header('Authorization')
@@ -40,7 +45,7 @@ class RamenProvider extends ServiceProvider {
 
         this.app.singleton('RamenModelTrait', (app) => {
             const RamenModelTrait = require('../src/traits/RamenModel')
-            return RamenModelTrait
+            return new RamenModelTrait()
         })
 
         this.app.singleton('RamenAuthController', (app) => {
