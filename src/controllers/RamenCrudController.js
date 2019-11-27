@@ -85,7 +85,7 @@ class RamenCrudController {
 
         const id = params.id
         const deletedData = await this.model.deleteData(id)
-        if (data.error.message) {
+        if (deletedData.error.message) {
             return response.status(500).send({
                 data: null,
                 meta: {
