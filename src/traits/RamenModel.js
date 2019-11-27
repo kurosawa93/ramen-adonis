@@ -113,6 +113,17 @@ class RamenModel {
       }
     }
 
+    Model.deleteData = async function (id) {
+      try {
+        const modelObj = await Model.findOrFail(id)
+        await modelObj.delete()
+        return {data: modelObj, error: {}}
+      }
+      catch(error) {
+        return {error: {message: 'POSTGRESQL ERROR. ' + error.message}}
+      }
+    }
+
     Model.commonQueryBuilder = async function (builder, request){
       const queryParams = request.all()
       var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'lat', 'lng']

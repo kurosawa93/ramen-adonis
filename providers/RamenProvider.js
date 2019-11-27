@@ -38,9 +38,19 @@ class RamenProvider extends ServiceProvider {
             return new RamenQueryResolver()
         })
 
+        this.app.singleton('RamenModelTrait', (app) => {
+            const RamenModelTrait = require('../src/traits/RamenModel')
+            return RamenModelTrait
+        })
+
         this.app.singleton('RamenAuthController', (app) => {
             const RamenAuthController = require('../src/controllers/RamenAuthController')
             return RamenAuthController
+        })
+
+        this.app.singleton('RamenCrudController', (app) => {
+            const RamenCrudController = require('../src/controllers/RamenCrudController')
+            return RamenCrudController
         })
 
         const Config = use('Adonis/Src/Config')
