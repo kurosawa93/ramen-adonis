@@ -11,10 +11,20 @@ class RamenProvider extends ServiceProvider {
             if (!validationEnabled) {
                 return
             }
-            
+
             const authUrl = Config._config.ramen.authUrl
             let claim = this.url()
             let token = this.header('Authorization')
+            if (!token) {
+                response.status(403).send({
+                    data: null,
+                    meta: {
+                        message: 'You\'re not authorized. token not provided'
+                    }
+                })
+                return {}
+            }
+
             token = token.split(' ')
             token = token[1]
             const body = {
@@ -27,12 +37,13 @@ class RamenProvider extends ServiceProvider {
                 this.loginData = data.data
             }
             catch(error) {
-                return response.status(403).send({
+                response.status(403).send({
                     data: null,
                     meta: {
                         message: 'You\'re not authorized'
                     }
                 })
+                return {}
             }
         })
     }

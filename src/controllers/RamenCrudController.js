@@ -6,7 +6,10 @@ class RamenCrudController {
     }
 
     async get({ request, response }) {
-        await request.validate()
+        const validation = await request.validate(response)
+        if (validation) {
+            return
+        }
         
         const data = await this.model.commonQueryBuilder(this.model.query(), request)
         if (data.error.message) {
@@ -26,7 +29,11 @@ class RamenCrudController {
     }
 
     async create({ request, response }) {
-        await request.validate()
+        const validation = await request.validate(response)
+        if (validation) {
+            return
+        }
+
         const data = await this.model.upsert(request.body)
         if (data.error.message) {
             return response.status(500).send({
@@ -45,7 +52,10 @@ class RamenCrudController {
     }
 
     async update({ request, params, response }) {
-        await request.validate()
+        const validation = await request.validate(response)
+        if (validation) {
+            return
+        }
 
         let body = request.body
         body.id = params.id
@@ -68,7 +78,10 @@ class RamenCrudController {
     }
 
     async delete({ request, params, response}) {
-        await request.validate()
+        const validation = await request.validate(response)
+        if (validation) {
+            return
+        }
 
         const id = params.id
         const deletedData = await this.model.deleteData(id)
