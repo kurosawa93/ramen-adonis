@@ -64,6 +64,40 @@ class RamenModel {
           case 'belongsToMany':
             await genericModel[relation.name]().sync(relationData, trx)
             return
+          case 'hasMany':
+            let relationObjs = await genericModel[relation.name]().fetch()
+            if (relationObjs.rows.length == 0) {
+              try {
+                for (const relationalData of relationData) {
+                  await genericModel[relation.name]().create(relationalData, trx)
+                }
+                return
+              }
+              catch (error) {
+                return 'POSTGRESQL ERROR. ' + error.message
+              }
+            }
+
+            let dataHelper = []
+            for(const relationalData of relationData) {
+              dataHelper[relationalData.id] = relationalData
+            }
+
+            for (const relational of relationObjs.rows) {
+              const relationalData = dataHelper[relational.id]
+              Object.keys(relationalData).forEach(key => {
+                relational[key] = relationalData[key]
+              })
+
+              try {
+                await relational.save(trx)
+                return
+              }
+              catch(error) {
+                return 'POSTGRESQL ERROR. ' + error.message
+              }
+            }
+            break
           default:
             let relationObj = await genericModel[relation.name]().fetch()
             if (!relationObj) {
