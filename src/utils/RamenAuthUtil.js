@@ -39,7 +39,7 @@ class RamenAuthUtil {
         return validAccount
     }
 
-    static sendMailForgotPassword(mail, url, token, accountObj) {
+    static async sendMailForgotPassword(mail, url, token, accountObj) {
         const verifyUrl = url + '/api/auth/forgot/verify?token=' + token
         accountObj.verify_url = verifyUrl
 
