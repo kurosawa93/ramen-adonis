@@ -43,7 +43,7 @@ class RamenAuthUtil {
         const verifyUrl = url + '/api/auth/forgot/verify?token=' + token
         accountObj.verify_url = verifyUrl
 
-        return await mail.send('emails.forgot', accountModel.toJSON(), (message) => {
+        return await mail.send('emails.forgot', accountObj.toJSON(), (message) => {
             message
                 .to(accountObj.email)
                 .subject('Forgot Password')

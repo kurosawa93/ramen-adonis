@@ -126,7 +126,7 @@ class AuthController {
         try {
             const key = process.env.APP_KEY
             const url = Config._config.ramen.appUrl
-            const token = await AuthUtil.generateToken(key, accountModel)
+            const token = await AuthUtil.generateToken(key, accountModel.id)
             await AuthUtil.sendMailForgotPassword(this.mail, url, token, accountModel)
         }
         catch(error) {
@@ -144,6 +144,33 @@ class AuthController {
                 message: 'mail successfully sent'
             }
         })
+    }
+
+    async verifyForgotPassword({request, response}) {
+        const token = request.input('token')
+        if (!token) {
+            return response.status(404).send({
+                data: null,
+                meta: {
+                    message: 'token not provided'
+                }
+            })
+        }
+
+        const tokenResult = AuthUtil.decodeToken(token)
+        if (tokenResult.error.message) {
+            return response.status(403).send({
+                data: null,
+                meta: {
+                    message: 'token is broken'
+                }
+            })
+        }
+
+        const key = process.env.APP_KEY
+        const newToken = await AuthUtil.generateToken(key, tokenResult.data)
+        const url = Config._config.ramen.redirectUrl + '?token=' + newToken
+        return response.redirect(url)
     }
 }
 
