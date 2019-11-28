@@ -12,7 +12,8 @@ class RamenProvider extends ServiceProvider {
                 return
             }
 
-            const authUrl = Config._config.ramen.authUrl
+            let appUrl = Config._config.ramen.appUrl
+            appUrl = appUrl + '/api/auth/verify'
             let claim = this.url()
             let token = this.header('Authorization')
             if (!token) {
@@ -33,7 +34,7 @@ class RamenProvider extends ServiceProvider {
             }
     
             try {
-                const { data } = await axios.post(authUrl, body)
+                const { data } = await axios.post(appUrl, body)
                 this.loginData = data.data
             }
             catch(error) {

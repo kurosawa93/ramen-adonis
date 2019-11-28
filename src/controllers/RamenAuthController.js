@@ -125,8 +125,9 @@ class AuthController {
 
         try {
             const key = process.env.APP_KEY
+            const url = Config._config.ramen.appUrl
             const token = await AuthUtil.generateToken(key, accountModel)
-            await AuthUtil.sendMailForgotPassword(this.mail, token, accountModel)
+            await AuthUtil.sendMailForgotPassword(this.mail, url, token, accountModel)
         }
         catch(error) {
             return response.status(500).send({

@@ -39,9 +39,8 @@ class RamenAuthUtil {
         return validAccount
     }
 
-    static sendMailForgotPassword(mail, token, accountObj) {
-        const host = process.env.HOST
-        const verifyUrl = host + '/api/auth/forgot/verify?token=' + token
+    static sendMailForgotPassword(mail, url, token, accountObj) {
+        const verifyUrl = url + '/api/auth/forgot/verify?token=' + token
         accountObj.verify_url = verifyUrl
 
         return await mail.send('emails.forgot', accountModel.toJSON(), (message) => {

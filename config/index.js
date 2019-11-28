@@ -3,7 +3,7 @@
 const Env = use('Env')
 
 module.exports = {
-    authUrl: Env.get('RAMEN_AUTH_URL'),
+    appUrl: Env.get('RAMEN_APP_URL'),
     aesKey: Env.get('RAMEN_AES_KEY'),
     validationEnabled: Env.get('RAMEN_VALIDATION_ENABLED')
 }
