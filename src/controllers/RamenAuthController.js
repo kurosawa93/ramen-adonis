@@ -5,8 +5,9 @@ const crypto = require('crypto')
 const Config = use('Adonis/Src/Config')
 
 class AuthController {
-    constructor(model) {
+    constructor(model, mail) {
         this.model = model
+        this.mail = mail
     }
 
     async login({request, auth, response}) {
@@ -56,7 +57,7 @@ class AuthController {
             })
         }
 
-        const credentials = await AuthUtil.generateToken(auth, account.data)
+        const credentials = await AuthUtil.generateAuthToken(auth, account.data)
         account.data.token = credentials.token
         account.data.refresh_token = credentials.refreshToken
         return response.status(200).send({
@@ -106,6 +107,40 @@ class AuthController {
             data: account,
             meta: {
                 message: 'Authorized'
+            }
+        })
+    }
+
+    async initForgetPassword({request, auth, response}) {
+        const email = request.body.email
+        const accountModel = await this.model.findBy('email', email)
+        if (!accountModel) {
+            return response.status(404).send({
+                data: null,
+                meta: {
+                    message: 'email not found'
+                }
+            })
+        }
+
+        try {
+            const key = process.env.APP_KEY
+            const token = await AuthUtil.generateToken(key, accountModel)
+            await AuthUtil.sendMailForgotPassword(this.mail, token, accountModel)
+        }
+        catch(error) {
+            return response.status(500).send({
+                data: null,
+                meta: {
+                    message: 'Server error. ' + error.message
+                }
+            })
+        }
+
+        return response.status(200).send({
+            data: accountModel,
+            meta: {
+                message: 'mail successfully sent'
             }
         })
     }

@@ -11,8 +11,12 @@ class RamenAuthUtil {
         return account
     }
 
-    static async generateToken(auth, model) {
+    static async generateAuthToken(auth, model) {
         return await auth.withRefreshToken().generate(model)
+    }
+
+    static async generateToken(key, model) {
+        return jwt.sign(model, key)
     }
 
     static decodeToken(token) {
@@ -33,6 +37,18 @@ class RamenAuthUtil {
         .where('id', id)
         .first()
         return validAccount
+    }
+
+    static sendMailForgotPassword(mail, token, accountObj) {
+        const host = process.env.HOST
+        const verifyUrl = host + '/api/auth/forgot/verify?token=' + token
+        accountObj.verify_url = verifyUrl
+
+        return await mail.send('emails.forgot', accountModel.toJSON(), (message) => {
+            message
+                .to(accountObj.email)
+                .subject('Forgot Password')
+        })
     }
 }
 

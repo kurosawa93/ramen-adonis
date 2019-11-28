@@ -13,6 +13,11 @@ module.exports = async (cli) => {
         const fileConfigOut = path.join(cli.helpers.configPath(), 'ramenfile.js')
         await cli.command.copy(fileConfigIn, fileConfigOut)
         cli.command.completed('create', 'config/ramenfile.js')
+
+        const emailTemplateIn = path.join(__dirname, './src/views', 'forgot.edge')
+        const emailTemplateOut = path.join(cli.helpers.viewsPath(), 'emails/forgot.edge')
+        await cli.command.copy(emailTemplateIn, emailTemplateOut)
+        cli.command.completed('create', 'emails/forgot.edge')
     } catch (error) {
         // ignore error
         console.log(error)
