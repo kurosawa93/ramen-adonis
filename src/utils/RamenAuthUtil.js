@@ -15,8 +15,8 @@ class RamenAuthUtil {
         return await auth.withRefreshToken().generate(model)
     }
 
-    static async generateToken(key, model) {
-        return jwt.sign(model, key, {expiresIn: 86400})
+    static async generateToken(key, model, expiry) {
+        return jwt.sign(model, key, {expiresIn: expiry})
     }
 
     static decodeToken(token) {
@@ -47,6 +47,21 @@ class RamenAuthUtil {
             message
                 .to(accountObj.email)
                 .subject('Forgot Password')
+        })
+    }
+
+    static async saveToken(accountObj, token) {
+        return await accountObj.tokens().create({
+            token: token,
+            type: 'forgot_password',
+            is_revoked: false
+        })
+    }
+
+    static async blacklistToken(accountObj) {
+        return await accountObj.tokens().where('type', 'forgot_password').where('is_revoked', false).update({
+            type: 'blacklisted',
+            is_revoked: true
         })
     }
 }

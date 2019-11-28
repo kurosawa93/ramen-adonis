@@ -3,6 +3,7 @@
 const AuthUtil = require('../utils/RamenAuthUtil')
 const crypto = require('crypto')
 const Config = use('Adonis/Src/Config')
+const Token = use('App/Models/Token')
 
 class AuthController {
     constructor(model, mail) {
@@ -126,7 +127,8 @@ class AuthController {
         try {
             const key = process.env.APP_KEY
             const url = Config._config.ramen.appUrl
-            const token = await AuthUtil.generateToken(key, {sub: accountModel.id})
+            const token = await AuthUtil.generateToken(key, {sub: accountModel.id}, 86400)
+            await AuthUtil.saveToken(accountModel, token)
             await AuthUtil.sendMailForgotPassword(this.mail, url, token, accountModel)
         }
         catch(error) {
@@ -167,8 +169,18 @@ class AuthController {
             })
         }
 
+        const blacklistedToken = await Token.query().where('type', 'blacklisted').where('is_revoked', true).where('token', token).first()
+        if (blacklistedToken) {
+            return response.status(403).send({
+                data: null,
+                meta: {
+                    message: 'token no longer valid'
+                }
+            })
+        }
+
         const key = process.env.APP_KEY
-        const newToken = await AuthUtil.generateToken(key, {sub: tokenResult.data.sub})
+        const newToken = await AuthUtil.generateToken(key, {sub: tokenResult.data.sub}, 300)
         const url = Config._config.ramen.redirectUrl + '?token=' + newToken
         return response.redirect(url)
     }
@@ -198,6 +210,7 @@ class AuthController {
         let accountModel = await this.model.findOrFail(accountId)
         accountModel.password = request.body.password
         await accountModel.save()
+        await AuthUtil.blacklistToken(accountModel)
 
         return response.status(200).send({
             data: accountModel,
