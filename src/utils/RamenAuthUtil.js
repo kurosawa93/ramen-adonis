@@ -16,7 +16,7 @@ class RamenAuthUtil {
     }
 
     static async generateToken(key, model) {
-        return jwt.sign(model, key)
+        return jwt.sign(model, key, {expiresIn: 86400})
     }
 
     static decodeToken(token) {

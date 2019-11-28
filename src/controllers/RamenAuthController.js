@@ -126,7 +126,7 @@ class AuthController {
         try {
             const key = process.env.APP_KEY
             const url = Config._config.ramen.appUrl
-            const token = await AuthUtil.generateToken(key, accountModel.id)
+            const token = await AuthUtil.generateToken(key, {sub: accountModel.id})
             await AuthUtil.sendMailForgotPassword(this.mail, url, token, accountModel)
         }
         catch(error) {
@@ -168,7 +168,7 @@ class AuthController {
         }
 
         const key = process.env.APP_KEY
-        const newToken = await AuthUtil.generateToken(key, tokenResult.data)
+        const newToken = await AuthUtil.generateToken(key, {sub: tokenResult.data.sub})
         const url = Config._config.ramen.redirectUrl + '?token=' + newToken
         return response.redirect(url)
     }
