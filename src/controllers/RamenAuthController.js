@@ -172,6 +172,40 @@ class AuthController {
         const url = Config._config.ramen.redirectUrl + '?token=' + newToken
         return response.redirect(url)
     }
+
+    async resolveForgotPassword({request, response}) {
+        const token = request.body.token
+        if (!token) {
+            return response.status(404).send({
+                data: null,
+                meta: {
+                    message: 'token not provided'
+                }
+            })
+        }
+
+        const tokenResult = AuthUtil.decodeToken(token)
+        if (tokenResult.error.message) {
+            return response.status(403).send({
+                data: null,
+                meta: {
+                    message: 'token is broken'
+                }
+            })
+        }
+
+        const accountId = tokenResult.data.sub
+        let accountModel = await this.model.findOrFail(accountId)
+        accountModel.password = request.body.password
+        await accountModel.save()
+
+        return response.status(200).send({
+            data: accountModel,
+            meta: {
+                message: 'password successfully changed'
+            }
+        })
+    }
 }
 
 module.exports = AuthController
