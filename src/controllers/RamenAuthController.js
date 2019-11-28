@@ -180,7 +180,7 @@ class AuthController {
         }
 
         const key = process.env.APP_KEY
-        const newToken = await AuthUtil.generateToken(key, {sub: tokenResult.data.sub}, 300)
+        const newToken = await AuthUtil.generateToken(key, {sub: tokenResult.data.sub}, 180)
         const url = Config._config.ramen.redirectUrl + '?token=' + newToken
         return response.redirect(url)
     }
@@ -197,6 +197,7 @@ class AuthController {
         }
 
         const tokenResult = AuthUtil.decodeToken(token)
+        console.log(tokenResult)
         if (tokenResult.error.message) {
             return response.status(403).send({
                 data: null,
