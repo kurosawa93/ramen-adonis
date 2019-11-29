@@ -2,6 +2,7 @@
 
 const AuthUtil = require('../utils/RamenAuthUtil')
 const TokenUtil = require('../utils/RamenTokenUtil')
+const Config = use('Adonis/Src/Config')
 
 class RamenForgotPasswordController {
     constructor(model, mail, token) {

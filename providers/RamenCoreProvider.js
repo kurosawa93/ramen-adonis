@@ -7,11 +7,6 @@ class RamenProvider extends ServiceProvider {
         const Config = use('Adonis/Src/Config')
     
         Request.macro('validate', async function (response) {
-            const validationEnabled = Config._config.ramen.validationEnabled
-            if (!validationEnabled) {
-                return
-            }
-
             let appUrl = Config._config.ramen.appUrl
             appUrl = appUrl + '/api/auth/verify'
             let claim = this.url()
