@@ -1,6 +1,6 @@
 'use strict'
 
-const FileProvider = use('RamenFileProvider')
+const FileProvider = use('Ramen/FileProvider')
 
 class RamenFileController {
     constructor() {}

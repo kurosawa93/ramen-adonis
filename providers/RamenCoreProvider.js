@@ -50,39 +50,14 @@ class RamenProvider extends ServiceProvider {
     }
 
     register() {
-        this.app.singleton('RamenQueryResolver', (app) => {
+        this.app.singleton('Ramen/QueryResolver', (app) => {
             const RamenQueryResolver = require('../src/RamenQueryResolver')
             return new RamenQueryResolver()
         })
 
-        this.app.singleton('RamenModelTrait', (app) => {
+        this.app.singleton('Ramen/ModelTrait', (app) => {
             const RamenModelTrait = require('../src/traits/RamenModel')
             return new RamenModelTrait()
-        })
-
-        this.app.singleton('RamenAuthController', (app) => {
-            const RamenAuthController = require('../src/controllers/RamenAuthController')
-            return RamenAuthController
-        })
-
-        this.app.singleton('RamenCrudController', (app) => {
-            const RamenCrudController = require('../src/controllers/RamenCrudController')
-            return RamenCrudController
-        })
-
-        const Config = use('Adonis/Src/Config')
-        const provider = Config._config.ramenfile.provider
-        const options = Config._config.ramenfile[provider]
-        const providerClass = provider.charAt(0).toUpperCase() + provider.slice(1) + 'FileResolver'
-
-        this.app.singleton('RamenFileController', (app) => {
-            const RamenFileController = require('../src/controllers/RamenFileController')
-            return RamenFileController
-        })
-
-        this.app.singleton('RamenFileProvider', (app) => {
-            const RamenFileProvider = require('../src/' + providerClass)
-            return new RamenFileProvider(options)
         })
     }
 }

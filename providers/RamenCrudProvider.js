@@ -5,7 +5,7 @@ class RamenProvider extends ServiceProvider {
     boot() {}
 
     register() {
-        this.app.singleton('RamenCrudController', (app) => {
+        this.app.singleton('Ramen/CrudController', (app) => {
             const RamenCrudController = require('../src/controllers/RamenCrudController')
             return RamenCrudController
         })
