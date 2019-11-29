@@ -1,7 +1,5 @@
 'use strict'
 
-const jwt = require('jsonwebtoken')
-
 class RamenAuthUtil {
     static async basicAuthenticate(auth, model, email, password) {
         const credentials = await auth.withRefreshToken().attempt(email, password)

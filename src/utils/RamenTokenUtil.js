@@ -1,5 +1,7 @@
 'use strict'
 
+const jwt = require('jsonwebtoken')
+
 class RamenTokenUtil {
     static async generateAuthToken(auth, model) {
         return await auth.withRefreshToken().generate(model)
