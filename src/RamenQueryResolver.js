@@ -35,7 +35,10 @@ class RamenQueryResolver {
   }
 
   resolveOrderBy(builder, orderBy, direction) {
-    builder.orderBy(orderBy, direction)
+    orderBy = orderBy.split(',')
+    for (const orderByEl of orderBy) {
+      builder.orderBy(orderByEl, direction)
+    }
     return builder
   }
 
