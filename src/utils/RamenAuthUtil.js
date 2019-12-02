@@ -14,6 +14,7 @@ class RamenAuthUtil {
             builder.where('endpoint', claim)
         })
         .where('id', id)
+        .with('profile')
         .first()
         return validAccount
     }
