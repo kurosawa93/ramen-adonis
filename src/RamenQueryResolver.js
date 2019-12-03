@@ -58,6 +58,9 @@ class RamenQueryResolver {
     else if (compareWith.includes('%')) {
       this.resolveLike(builder, columnName, compareWith)
     }
+    else if (columnName.charAt(0) === '{' && columnName.charAt(columnName.length-1) === '}') {
+      this.resolveJson(builder, columnName, compareWith)
+    }
     else {
       let specialOperator = false
       operatorFirstPriority.forEach(operatorElement => {
@@ -115,6 +118,13 @@ class RamenQueryResolver {
 
   resolveWhereWithOperator(builder, operator, columnName, value) {
     builder.where(columnName, operator, value)
+    return builder
+  }
+
+  resolveJson(builder, query, value) {
+    query = query.substring(1, query.length-1)
+    query += ' = ?'
+    builder.whereRaw(query, value)
     return builder
   }
 }
