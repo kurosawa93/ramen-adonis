@@ -4,7 +4,7 @@ const Config = use('Adonis/Src/Config')
 const axios = require('axios')
 
 class RamenAuthVerify {
-    async handle({ request, response }, next) {
+    async handle({ request, response }, next, properties) {
         let appUrl = Config._config.ramen.appUrl
         appUrl = appUrl + '/api/auth/verify'
         const claim = this.buildClaim(request, properties)
