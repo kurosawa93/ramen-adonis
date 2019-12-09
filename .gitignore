@@ -12,3 +12,6 @@ database/*.sqlite
 
 # lock files
 package-lock.json
+
+# idea files
+.idea

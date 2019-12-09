@@ -17,9 +17,7 @@ class RamenCrudController {
         }
         return response.status(200).send({
             data: data.data,
-            meta: {
-                message: 'data successfully queried'
-            }
+            meta: data.meta
         })
     }
 
