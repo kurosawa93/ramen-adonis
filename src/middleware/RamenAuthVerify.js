@@ -43,9 +43,10 @@ class RamenAuthVerify {
     buildClaim(request, pathParameters) {
         const url = request.url()
         const urlArr = url.split("/")
+        const urlLength = pathParameters.length == 0 ? urlArr.length : urlArr.length-1
         let claim = ""
 
-        for (let i = 1; i < urlArr.length-1; i++) {
+        for (let i = 1; i < urlLength; i++) {
             claim += "/" + urlArr[i];
         }
 
