@@ -7,7 +7,7 @@ class RamenAuthVerify {
     async handle({ request, response }, next) {
         let appUrl = Config._config.ramen.appUrl
         appUrl = appUrl + '/api/auth/verify'
-        let claim = request.url()
+        const claim = this.buildClaim(request, properties)
         let token = request.header('Authorization')
         if (!token) {
             return response.status(403).send({
@@ -38,6 +38,21 @@ class RamenAuthVerify {
             })
         }
         await next()
+    }
+
+    buildClaim(request, pathParameters) {
+        const url = request.url()
+        const urlArr = url.split("/")
+        let claim = ""
+
+        for (let i = 1; i < urlArr.length-1; i++) {
+            claim += "/" + urlArr[i];
+        }
+
+        for (let i = 0; i < pathParameters.length; i++) {
+            claim += "/:" + pathParameters[i]
+        }
+        return claim
     }
 }
 
