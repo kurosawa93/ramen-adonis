@@ -127,6 +127,55 @@ class RamenQueryResolver {
     builder.whereRaw(query, value)
     return builder
   }
+
+  async saveBelongsToManyRelations(genericModel, relationName, relationData) {
+    await genericModel[relationName]().sync(relationData)
+  }
+
+  async saveHasManyRelations(genericModel, relationName, relationData) {
+    let relationObjs = await genericModel[relationName]().fetch()
+    if (relationObjs.rows.length == 0) {
+      for (const relationalData of relationData) {
+        await genericModel[relationName]().create(relationalData)
+      }
+      return
+    }
+
+    let dataHelper = {}
+    for(const relationalData of relationObjs.rows) {
+      dataHelper[relationalData.id] = relationalData
+    }
+
+    for (const data of relationData) {
+      if (!data.id) {
+        await genericModel[relationName]().create(data)
+        continue
+      }
+
+      const relationalData = dataHelper[data.id]
+      Object.keys(data).forEach(key => {
+        relationalData[key] = data[key]
+      })
+      await relationalData.save(trx)
+    }
+    return
+  }
+
+  async saveHasOneRelations(genericModel, relationName, relationData) {
+    let relationObj = await genericModel[relation.name]().fetch()
+    if (!relationObj) {
+        await genericModel[relationName]().create(relationData)
+        return
+    }
+
+    Object.keys(relationData).forEach(key => {
+      relationObj[key] = relationData[key]
+    })
+
+    await relationObj.save()
+    return
+  }
+
 }
 
 module.exports = RamenQueryResolver

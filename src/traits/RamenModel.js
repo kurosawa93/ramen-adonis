@@ -62,69 +62,13 @@ class RamenModel {
         
         switch(relation.type) {
           case 'belongsToMany':
-            genericModel[relation.name]().sync(relationData, trx)
-            return
+            await QueryResolver.saveBelongsToManyRelations(genericModel, relation.name, relationData)
+            break
           case 'hasMany':
-            let relationObjs = await genericModel[relation.name]().fetch()
-            if (relationObjs.rows.length == 0) {
-              try {
-                for (const relationalData of relationData) {
-                  await genericModel[relation.name]().create(relationalData, trx)
-                }
-                return
-              }
-              catch (error) {
-                return 'POSTGRESQL ERROR. ' + error.message
-              }
-            }
-
-            let dataHelper = {}
-            for(const relationalData of relationObjs.rows) {
-              dataHelper[relationalData.id] = relationalData
-            }
-
-            for (const data of relationData) {
-              if (!data.id) {
-                await genericModel[relation.name]().create(data, trx)
-                continue
-              }
-
-              const relationalData = dataHelper[data.id]
-              Object.keys(data).forEach(key => {
-                relationalData[key] = data[key]
-              })
-
-              try {
-                await relationalData.save(trx)
-              }
-              catch(error) {
-                return 'POSTGRESQL ERROR. ' + error.message
-              }
-            }
+            await QueryResolver.saveHasManyRelations(genericModel, relation.name, relationData)
             break
           default:
-            let relationObj = await genericModel[relation.name]().fetch()
-            if (!relationObj) {
-              try {
-                await genericModel[relation.name]().create(relationData, trx)
-                continue
-              }
-              catch (error) {
-                return 'POSTGRESQL ERROR. ' + error.message
-              }
-            }
-
-            Object.keys(relationData).forEach(key => {
-              relationObj[key] = relationData[key]
-            })
-
-            try {
-              await relationObj.save(trx)
-              continue
-            }
-            catch(error) {
-              return 'POSTGRESQL ERROR. ' + error.message
-            }
+            await QueryResolver.saveHasOneRelations(genericModel, relation.name, relationData)
         }
       }
     }
