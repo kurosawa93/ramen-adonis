@@ -22,7 +22,6 @@ class RamenModel {
     }
 
     Model.saveObject = async function (data, genericModel) {
-      const trx = await Database.beginTransaction()
       const columns = options.columns
       if (columns.length == 0) {
         return {error: {message: 'Model Error. Please define columns in your model'}}
@@ -34,20 +33,15 @@ class RamenModel {
   
       try {
           await genericModel.save(trx)
-          const result = await Model.saveRelations(data, genericModel,trx)
-          if (result) {
-            await trx.rollback()
-            return {error: {message: result}}
-          }
-          await trx.commit()
+          await Model.saveRelations(data, genericModel)
           return {data: genericModel, error: {}}
       } catch (error){
-        await trx.rollback()
+        await genericModel.delete()
         return {error: {message: 'POSTGRESQL ERROR. ' + error.message}}
       }
     }
 
-    Model.saveRelations = async function (data, genericModel, trx) {
+    Model.saveRelations = async function (data, genericModel) {
       const relations = options.relations
       if (relations.length == 0) {
         return
