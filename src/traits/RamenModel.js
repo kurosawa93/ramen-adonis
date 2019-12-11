@@ -32,11 +32,13 @@ class RamenModel {
       })
   
       try {
-          await genericModel.save(trx)
+          await genericModel.save()
           await Model.saveRelations(data, genericModel)
           return {data: genericModel, error: {}}
       } catch (error){
-        await genericModel.delete()
+        if (genericModel.id) {
+          await genericModel.delete()
+        }
         return {error: {message: 'POSTGRESQL ERROR. ' + error.message}}
       }
     }

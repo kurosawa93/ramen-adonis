@@ -162,7 +162,7 @@ class RamenQueryResolver {
   }
 
   async saveHasOneRelations(genericModel, relationName, relationData) {
-    let relationObj = await genericModel[relation.name]().fetch()
+    let relationObj = await genericModel[relationName]().fetch()
     if (!relationObj) {
         await genericModel[relationName]().create(relationData)
         return
