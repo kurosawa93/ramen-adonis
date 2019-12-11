@@ -62,7 +62,7 @@ class RamenModel {
         
         switch(relation.type) {
           case 'belongsToMany':
-            await genericModel[relation.name]().sync(relationData, trx)
+            genericModel[relation.name]().sync(relationData, trx)
             return
           case 'hasMany':
             let relationObjs = await genericModel[relation.name]().fetch()
