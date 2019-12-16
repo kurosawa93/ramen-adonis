@@ -3,8 +3,7 @@
 class RamenQueryResolver {
   constructor() {}
 
-  commonQueryBuilder(builder, request) {
-    const queryParams = request.all()
+  commonQueryBuilder(builder, queryParams) {
     var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'lat', 'lng']
 
     for (let key in queryParams){

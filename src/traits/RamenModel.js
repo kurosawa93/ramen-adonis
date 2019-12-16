@@ -108,13 +108,13 @@ class RamenModel {
       }
 
       try {
-        var queryResult = await QueryResolver.commonQueryBuilder(builder, request)
+        var queryResult = await QueryResolver.commonQueryBuilder(builder, request.all())
         if (queryResult.pages) {
           Object.keys(queryResult.pages).forEach(pageElement => {
             defaultMeta[pageElement] = queryResult.pages[pageElement]
           })
         }
-        
+
         return {data: queryResult.rows, meta: defaultMeta, error: {}}
       } catch(error){
         return {error: {message: 'POSTGRESQL ERROR.' + error.message}}
