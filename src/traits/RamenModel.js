@@ -102,13 +102,13 @@ class RamenModel {
       }
     }
 
-    Model.commonQueryBuilder = async function (builder, request){
+    Model.commonQueryBuilder = async function (builder, queryParams){
       let defaultMeta = {
         message: 'data successfully retrieved'
       }
 
       try {
-        var queryResult = await QueryResolver.commonQueryBuilder(builder, request.all())
+        var queryResult = await QueryResolver.commonQueryBuilder(builder, queryParams)
         if (queryResult.pages) {
           Object.keys(queryResult.pages).forEach(pageElement => {
             defaultMeta[pageElement] = queryResult.pages[pageElement]

@@ -4,18 +4,20 @@ class RamenQueryResolver {
   constructor() {}
 
   commonQueryBuilder(builder, queryParams) {
-    var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'lat', 'lng']
+    var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale']
 
     for (let key in queryParams){
-      if (key == 'relations'){
-        QueryResolver.resolveRelations(builder, queryParams['relations'])
+      if (!reservedKeyword.includes(key)){
+        this.resolveWhere(builder, key, queryParams[key])
       }
-      else if (key == 'orderBy'){
-        QueryResolver.resolveOrderBy(builder, queryParams['orderBy'], queryParams['direction'] ? queryParams['direction'] : 'desc')
-      }
-      else if (!reservedKeyword.includes(key)){
-        QueryResolver.resolveWhere(builder, key, queryParams[key])
-      }
+    }
+
+    if (queryParams['relations']){
+      this.resolveRelations(builder, queryParams['relations'])
+    }
+
+    if (queryParams['orderBy']){
+      this.resolveOrderBy(builder, queryParams['orderBy'], queryParams['direction'] ? queryParams['direction'] : 'desc')
     }
 
     if (queryParams['page']){
@@ -146,6 +148,11 @@ class RamenQueryResolver {
     query = query.substring(1, query.length-1)
     query += ' = ?'
     builder.whereRaw(query, value)
+    return builder
+  }
+
+  resolveLocale(builder, locale) {
+    builder.whereRaw('locale->' + locale + '->> != ?', null)
     return builder
   }
 
