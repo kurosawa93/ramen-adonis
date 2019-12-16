@@ -36,16 +36,18 @@ class RamenCrudController {
             })
         }
         
-        for (const element of data.data) {
+        let result = []
+        for (let element of data.data) {
             element = element.toJSON()
             const data = element.locale[locale]
             for (const key in data) {
                 element[key] = data[key]
             }
             delete element['locale']
+            result.push(element)
         }
         return response.status(200).send({
-            data: data.data,
+            data: result,
             meta: data.meta
         })
     }

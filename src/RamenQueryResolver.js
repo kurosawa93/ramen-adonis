@@ -12,6 +12,10 @@ class RamenQueryResolver {
       }
     }
 
+    if (queryParams['locale']) {
+      this.resolveLocale(builder, queryParams['locale'])
+    }
+
     if (queryParams['relations']){
       this.resolveRelations(builder, queryParams['relations'])
     }
@@ -152,7 +156,7 @@ class RamenQueryResolver {
   }
 
   resolveLocale(builder, locale) {
-    builder.whereRaw('locale->' + locale + '->> != ?', null)
+    builder.whereRaw('locale->>\'' + locale + '\' IS NOT NULL')
     return builder
   }
 
