@@ -103,43 +103,21 @@ class RamenModel {
     }
 
     Model.commonQueryBuilder = async function (builder, request){
-      const queryParams = request.all()
-      var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'lat', 'lng']
-
-      for (let key in queryParams){
-        if (key == 'relations'){
-          QueryResolver.resolveRelations(builder, request.input('relations'))
-        }
-        else if (key == 'orderBy'){
-          QueryResolver.resolveOrderBy(builder, request.input('orderBy', 'created_at'), request.input('direction', 'desc'))
-        }
-        else if (!reservedKeyword.includes(key)){
-          QueryResolver.resolveWhere(builder, key, request.input(key))
-        }
-      }
-
-      // handle pagination
       let defaultMeta = {
         message: 'data successfully retrieved'
       }
 
-      if (queryParams.hasOwnProperty('page')){
-        try {
-          var queryData = await builder.paginate(request.input('page'), request.input('limit', 25))
-          Object.keys(queryData.pages).forEach(pageElement => {
-            defaultMeta[pageElement] = queryData.pages[pageElement]
-          })
-          return {data: queryData.rows, meta: defaultMeta, error: {}}
-        } catch(error){
-          return {error: {message: 'POSTGRESQL ERROR.' + error.message}}
-        }
-      }
-
       try {
-        var queryData = await builder.fetch()
-        return {data: queryData, meta: defaultMeta, error: {}}
+        var queryResult = await QueryResolver.commonQueryBuilder(builder, request)
+        if (queryResult.pages) {
+          Object.keys(queryResult.pages).forEach(pageElement => {
+            defaultMeta[pageElement] = queryResult.pages[pageElement]
+          })
+        }
+        
+        return {data: queryResult.rows, meta: defaultMeta, error: {}}
       } catch(error){
-        return {error: {message: 'POSTGRESQL ERROR. ' + error.message}}
+        return {error: {message: 'POSTGRESQL ERROR.' + error.message}}
       }
     }
   }

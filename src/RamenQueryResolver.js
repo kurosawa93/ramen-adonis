@@ -2,6 +2,28 @@
 
 class RamenQueryResolver {
   constructor() {}
+
+  commonQueryBuilder(builder, request) {
+    const queryParams = request.all()
+    var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'lat', 'lng']
+
+    for (let key in queryParams){
+      if (key == 'relations'){
+        QueryResolver.resolveRelations(builder, request.input('relations'))
+      }
+      else if (key == 'orderBy'){
+        QueryResolver.resolveOrderBy(builder, request.input('orderBy', 'created_at'), request.input('direction', 'desc'))
+      }
+      else if (!reservedKeyword.includes(key)){
+        QueryResolver.resolveWhere(builder, key, request.input(key))
+      }
+    }
+
+    if (queryParams.hasOwnProperty('page')){
+      return builder.paginate(request.input('page'), request.input('limit', 25))
+    }
+    return builder.fetch()
+  }
   
   resolveRelations(builder, input) {
     let relations = input.split(',')
