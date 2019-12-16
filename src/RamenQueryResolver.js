@@ -8,18 +8,18 @@ class RamenQueryResolver {
 
     for (let key in queryParams){
       if (key == 'relations'){
-        QueryResolver.resolveRelations(builder, request.input('relations'))
+        QueryResolver.resolveRelations(builder, queryParams['relations'])
       }
       else if (key == 'orderBy'){
-        QueryResolver.resolveOrderBy(builder, request.input('orderBy', 'created_at'), request.input('direction', 'desc'))
+        QueryResolver.resolveOrderBy(builder, queryParams['orderBy'], queryParams['direction'] ? queryParams['direction'] : 'desc')
       }
       else if (!reservedKeyword.includes(key)){
-        QueryResolver.resolveWhere(builder, key, request.input(key))
+        QueryResolver.resolveWhere(builder, key, queryParams[key])
       }
     }
 
-    if (queryParams.hasOwnProperty('page')){
-      return builder.paginate(request.input('page'), request.input('limit', 25))
+    if (queryParams['page']){
+      return builder.paginate(queryParams['page'], queryParams['limit'] ? queryParams['limit'] : 25)
     }
     return builder.fetch()
   }
