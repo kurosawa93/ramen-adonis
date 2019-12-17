@@ -69,7 +69,7 @@ class RamenCrudController {
             })
         }
         return response.status(200).send({
-            data: LocaleUtil.getLocaleData(data.data, locale),
+            data: LocaleUtil.getLocaleData(data.data.toObject(), locale),
             meta: {
                 message: 'Data successfully retrieved'
             }
