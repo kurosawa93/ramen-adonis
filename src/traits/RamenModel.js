@@ -126,7 +126,7 @@ class RamenModel {
     }
 
     Model.getBySlugWithLocale = async function (locale, slug) {
-      const query = 'locale->\'' + locale + '\'->>slug = ?'
+      const query = 'locale->\'' + locale + '\'->>\'slug\' = ?'
       try {
         const result = await Model.query().whereRaw(query, slug).first()
         return {data: result, error: {}}

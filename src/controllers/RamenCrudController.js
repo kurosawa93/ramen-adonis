@@ -1,5 +1,7 @@
 'use strict'
 
+const LocaleUtil = require('../utils/LocaleUtil')
+
 class RamenCrudController {
     constructor(model) {
         this.model = model
@@ -38,13 +40,7 @@ class RamenCrudController {
         
         let result = []
         for (let element of data.data) {
-            element = element.toJSON()
-            const data = element.locale[locale]
-            for (const key in data) {
-                element[key] = data[key]
-            }
-            delete element['locale']
-            result.push(element)
+            result.push(LocaleUtil.getLocaleData(element.toObject(), locale))
         }
         return response.status(200).send({
             data: result,
@@ -73,7 +69,7 @@ class RamenCrudController {
             })
         }
         return response.status(200).send({
-            data: data.data,
+            data: LocaleUtil.getLocaleData(data.data, locale),
             meta: {
                 message: 'Data successfully retrieved'
             }
