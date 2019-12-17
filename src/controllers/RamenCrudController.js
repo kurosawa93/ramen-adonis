@@ -52,6 +52,34 @@ class RamenCrudController {
         })
     }
 
+    async getBySlugWithLocale({params, response}) {
+        const locale = params.locale
+        const slug = params.slug
+        const data = await this.model.getBySlugWithLocale(locale, slug)
+        if (data.error.message) {
+            return response.status(500).send({
+                data: null,
+                meta: {
+                    message: data.error.message
+                }
+            })
+        }
+        if (!data.data) {
+            return response.status(404).send({
+                data: null,
+                meta: {
+                    message: 'Data not found'
+                }
+            })
+        }
+        return response.status(200).send({
+            data: data.data,
+            meta: {
+                message: 'Data successfully retrieved'
+            }
+        })
+    }
+
     async create({ request, response }) {
         const data = await this.model.upsert(request.body)
         if (data.error.message) {

@@ -120,6 +120,17 @@ class RamenModel {
         return {error: {message: 'POSTGRESQL ERROR.' + error.message}}
       }
     }
+
+    Model.getBySlugWithLocale = async function (locale, slug) {
+      const query = 'locale->\'' + locale + '\'->>slug = ?'
+      try {
+        const result = await Model.query().whereRaw(query, slug).first()
+        return {data: result, error: {}}
+      }
+      catch(error) {
+        return {error: {message: 'POSTGRESQL ERROR ' + error.message}}
+      }
+    }
   }
 }
 
