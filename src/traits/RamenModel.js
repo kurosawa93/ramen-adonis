@@ -1,7 +1,7 @@
 'use strict'
 
 const QueryResolver = use('Ramen/QueryResolver')
-const Database = use('Database')
+const slugify = require('slugify')
 
 class RamenModel {
   register (Model, customOptions = {}) {
@@ -70,6 +70,10 @@ class RamenModel {
     }
 
     Model.upsert = async function (data) {
+      if (options.slug) {
+        Model.assignSlug(data, options.path, options.valuePath)
+      }
+      
       try {
         if (data.id != null) {
           let genericModel = await Model.updateObject(data.id, data)
@@ -130,6 +134,26 @@ class RamenModel {
       catch(error) {
         return {error: {message: 'POSTGRESQL ERROR ' + error.message}}
       }
+    }
+
+    Model.assignSlug = function(obj, slugPath, slugValuePath) {
+      const valuePath = slugValuePath.split('.')
+      let value = data
+      for (let i = 0; i < valuePath.length; i++) {
+        value = value[valuePath[i]]
+      }
+      value = slugify(value)
+
+      const slugPath = slugPath.split('.')
+      const lastIndex = slugPath.length-1
+      for (let i = 0; i < lastIndex; i++) {
+        const key = slugPath[i]
+        if (!(key in obj)) {
+          return
+        }
+        obj = obj[key]
+      }
+      obj[slugPath[lastIndex]] = value
     }
   }
 }
