@@ -40,7 +40,7 @@ class RamenCrudController {
         
         let result = []
         for (let element of data.data) {
-            result.push(LocaleUtil.getLocaleData(element.toObject(), locale))
+            result.push(LocaleUtil.getLocaleData(element.toJSON(), locale))
         }
         return response.status(200).send({
             data: result,
@@ -69,7 +69,7 @@ class RamenCrudController {
             })
         }
         return response.status(200).send({
-            data: LocaleUtil.getLocaleData(data.data.toObject(), locale),
+            data: LocaleUtil.getLocaleData(data.data.toJSON(), locale),
             meta: {
                 message: 'Data successfully retrieved'
             }
