@@ -115,6 +115,29 @@ class RamenCrudController {
         })
     }
 
+    async upsert({ request, params, response }) {
+        const body = request.body
+        for (const key in params) {
+            body[key] = params[key]
+        }
+
+        const data = await this.model.upsert(body)
+        if (data.error.message) {
+            return response.status(500).send({
+                data: null,
+                meta: {
+                    message: data.error.message
+                }
+            })
+        }
+        return response.status(200).send({
+            data: data.data,
+            meta: {
+                message: 'data successfully updated'
+            }
+        })
+    }
+
     async delete({ request, params, response}) {
         const id = params.id
         const deletedData = await this.model.deleteData(id)
