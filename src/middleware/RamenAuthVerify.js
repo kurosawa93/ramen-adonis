@@ -4,10 +4,18 @@ const Config = use('Adonis/Src/Config')
 const axios = require('axios')
 
 class RamenAuthVerify {
+    /**
+     * 
+     * @param {*} param0 
+     * @param {*} next 
+     * @param {*} properties 
+     * 
+     * properties is array, and should only contain one element, which is the API Permission.
+     * One API should only have one permission. This is debatable in the future.
+     */
     async handle({ request, response }, next, properties) {
         let appUrl = Config._config.ramen.appUrl
         appUrl = appUrl + '/api/auth/verify'
-        const claim = this.buildClaim(request, properties)
         let token = request.header('Authorization')
         if (!token) {
             return response.status(403).send({
@@ -21,7 +29,7 @@ class RamenAuthVerify {
         token = token.split(' ')
         token = token[1]
         const body = {
-            claim: claim,
+            claim: properties[0],
             token: token
         }
 
@@ -38,22 +46,6 @@ class RamenAuthVerify {
             })
         }
         await next()
-    }
-
-    buildClaim(request, pathParameters) {
-        const url = request.url()
-        const urlArr = url.split("/")
-        const urlLength = pathParameters.length == 0 ? urlArr.length : urlArr.length-1
-        let claim = ""
-
-        for (let i = 1; i < urlLength; i++) {
-            claim += "/" + urlArr[i];
-        }
-
-        for (let i = 0; i < pathParameters.length; i++) {
-            claim += "/:" + pathParameters[i]
-        }
-        return claim
     }
 }
 

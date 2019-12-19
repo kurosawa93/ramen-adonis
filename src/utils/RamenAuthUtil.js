@@ -9,9 +9,9 @@ class RamenAuthUtil {
         return account
     }
 
-    static async validateClaim(id, claim, model) {
+    static async validateClaim(id, permission, model) {
         const validAccount = await model.query().whereHas('roles.claims', (builder) => {
-            builder.where('endpoint', claim)
+            builder.where('permission', permission)
         })
         .where('id', id)
         .with('profile')
