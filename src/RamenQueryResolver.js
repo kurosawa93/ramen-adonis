@@ -53,9 +53,17 @@ class RamenQueryResolver {
       let queryObject = queryElement.split(',')
       queryObject.forEach(objectElement => {
         objectElement = objectElement.split('=')
-        builder.whereHas(relationName, (builder) => {
-          this.resolveWhere(builder, objectElement[0], objectElement[1])
-        })
+        if (objectElement[0].includes('*')) {
+          builder.with(relationName, (innerBuilder) => {
+            objectElement[0] = objectElement[0].replace('*', '')
+            this.resolveWhere(innerBuilder, objectElement[0], objectElement[1])
+          })
+        }
+        else {
+          builder.whereHas(relationName, (builder) => {
+            this.resolveWhere(builder, objectElement[0], objectElement[1])
+          })
+        }
       })
     })
     return builder
