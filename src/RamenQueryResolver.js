@@ -8,7 +8,7 @@ class RamenQueryResolver {
 
     for (let key in queryParams){
       if (!reservedKeyword.includes(key)){
-        this.resolveWhere(builder, key, queryParams[key])
+        this.resolveOperator(builder, key, queryParams[key])
       }
     }
 
@@ -56,12 +56,12 @@ class RamenQueryResolver {
         if (objectElement[0].includes('*')) {
           builder.with(relationName, (innerBuilder) => {
             objectElement[0] = objectElement[0].replace('*', '')
-            this.resolveWhere(innerBuilder, objectElement[0], objectElement[1])
+            this.resolveOperator(innerBuilder, objectElement[0], objectElement[1])
           })
         }
         else {
           builder.whereHas(relationName, (builder) => {
-            this.resolveWhere(builder, objectElement[0], objectElement[1])
+            this.resolveOperator(builder, objectElement[0], objectElement[1])
           })
         }
       })
@@ -77,46 +77,79 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveWhere(builder, columnName, compareWith) {
+  resolveOperator(builder, columnName, comparevalues) {
+    const comparators = comparevalues.split(',')
+    if (columnName.includes('|')) {
+      columnName = columnName.replace('|', '')
+      builder.orWhere((orBuilder) => {
+        for (const comparator of comparators) {
+          this.resolveWhere(orBuilder, columnName, comparator)
+        }
+      })
+      return
+    }
+
+    builder.where((andBuilder) => {
+      for (const comparator of comparators) {
+        this.resolveWhere(andBuilder, columnName, comparator)
+      }
+    })
+    return
+  }
+
+  resolveSpecialOperator() {
     let operatorFirstPriority = ['>=', '<=', '!=']
     let operatorSecondPriority = ['<', '>']
+    let specialOperator = false
 
-    if (compareWith.includes('|')) {
-      this.resolveOr(builder, columnName, compareWith)
+    for (const operatorElement of operatorFirstPriority) {
+      if (compareWith.includes(operatorElement)) {
+        specialOperator = operatorElement
+        compareWith = compareWith.replace(operatorElement, '')
+      }
     }
-    else if (compareWith.includes('<>') && compareWith.includes('|')) {
+
+    for (const operatorElement of operatorSecondPriority) {
+      if (compareWith.includes(operatorElement)) {
+        specialOperator = operatorElement
+        compareWith = compareWith.replace(operatorElement, '')
+      }
+    }
+
+    if (!specialOperator) {
+      builder.where(columnName, compareWith)
+      return false
+    }
+
+    builder.where(columnName, specialOperator, compareWith)
+    return true
+  }
+
+  resolveWhere(builder, columnName, compareWith) {
+    let customOperator = false
+
+    if (compareWith.includes('<>') && compareWith.includes('|')) {
       this.resolveOrBetween(builder, columnName, compareWith)
+      customOperator = true
     }
     else if (compareWith.includes('<>')) {
       this.resolveAndBetween(builder, columnName, compareWith)
+      customOperator = true
+    }
+    else if (compareWith.includes('|')) {
+      this.resolveOr(builder, columnName, compareWith)
+      customOperator = true
     }
     else if (compareWith.includes('%')) {
       this.resolveLike(builder, columnName, compareWith)
-    }
-    else if (columnName.charAt(0) === '{' && columnName.charAt(columnName.length-1) === '}') {
+      customOperator = true
+    } else if (columnName.charAt(0) === '{' && columnName.charAt(columnName.length-1) === '}') {
       this.resolveJson(builder, columnName, compareWith)
+      customOperator = true
     }
-    else {
-      let specialOperator = false
-      operatorFirstPriority.forEach(operatorElement => {
-        if (compareWith.includes(operatorElement)) {
-          specialOperator = operatorElement
-          compareWith = compareWith.replace(operatorElement, '')
-        }
-      })
-      operatorSecondPriority.forEach(operatorElement => {
-        if (compareWith.includes(operatorElement)) {
-          specialOperator = operatorElement
-          compareWith = compareWith.replace(operatorElement, '')
-        }
-      })
 
-      if (specialOperator) {
-        this.resolveWhereWithOperator(builder, specialOperator, columnName, compareWith)
-      }
-      else {
-        builder.where(columnName, compareWith)
-      }
+    if (!customOperator) {
+      this.resolveSpecialOperator(builder, columnName, compareWith)
     }
   }
 
@@ -130,18 +163,18 @@ class RamenQueryResolver {
 
   resolveOrBetween(builder, columnName, value) {
     value = value.split('<>')
-    builder.orWhere((builder) => {
-      builder.orWhere(columnName, '>', value[0].replace('|', ''))
-      builder.orWhere(columnName, '<', value[1])
+    builder.orWhere((orBuilder) => {
+      orBuilder.where(columnName, '>', value[0].replace('|', ''))
+      orBuilder.where(columnName, '<', value[1])
     })
     return builder
   }
 
   resolveAndBetween(builder, columnName, value) {
     value = value.split('<>')
-    builder.where((builder) => {
-      builder.orWhere(columnName, '>', value[0])
-      builder.orWhere(columnName, '<', value[1])
+    builder.where((andBuilder) => {
+      andBuilder.where(columnName, '>', value[0])
+      andBuilder.where(columnName, '<', value[1])
     })
     return builder
   }

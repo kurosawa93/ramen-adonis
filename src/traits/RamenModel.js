@@ -1,6 +1,6 @@
 'use strict'
 
-const QueryResolver = use('Ramen/QueryResolver')
+const QueryResolver = require('../RamenQueryResolver')
 const slugify = require('slugify')
 
 class RamenModel {
