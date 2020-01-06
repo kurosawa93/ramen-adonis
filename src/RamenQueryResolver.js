@@ -3,7 +3,7 @@
 class RamenQueryResolver {
   constructor() {}
 
-  commonQueryBuilder(builder, queryParams) {
+  static commonQueryBuilder(builder, queryParams) {
     var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale']
 
     for (let key in queryParams){
@@ -30,7 +30,7 @@ class RamenQueryResolver {
     return builder.fetch()
   }
   
-  resolveRelations(builder, input) {
+  static resolveRelations(builder, input) {
     let relations = input.split(',')
     relations.forEach(relationElement => {
       if (relationElement.includes('^')) {
@@ -43,7 +43,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveQueryRelations(builder, input) {
+  static resolveQueryRelations(builder, input) {
     let relationQuery = input.split('^')
     let relationName = relationQuery[0]
     relationQuery = relationQuery[1]
@@ -69,7 +69,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveOrderBy(builder, orderBy, direction) {
+  static resolveOrderBy(builder, orderBy, direction) {
     orderBy = orderBy.split(',')
     for (const orderByEl of orderBy) {
       builder.orderBy(orderByEl, direction)
@@ -77,7 +77,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveOperator(builder, columnName, comparevalues) {
+  static resolveOperator(builder, columnName, comparevalues) {
     const comparators = comparevalues.split(',')
     if (columnName.includes('|')) {
       columnName = columnName.replace('|', '')
@@ -97,7 +97,7 @@ class RamenQueryResolver {
     return
   }
 
-  resolveSpecialOperator() {
+  static resolveSpecialOperator(builder, columnName, compareWith) {
     let operatorFirstPriority = ['>=', '<=', '!=']
     let operatorSecondPriority = ['<', '>']
     let specialOperator = false
@@ -125,7 +125,7 @@ class RamenQueryResolver {
     return true
   }
 
-  resolveWhere(builder, columnName, compareWith) {
+  static resolveWhere(builder, columnName, compareWith) {
     let customOperator = false
 
     if (compareWith.includes('<>') && compareWith.includes('|')) {
@@ -153,7 +153,7 @@ class RamenQueryResolver {
     }
   }
 
-  resolveOr(builder, columnName, value) {
+  static resolveOr(builder, columnName, value) {
     value = value.replace('|', '')
     builder.orWhere((builder) => {
       builder.orWhere(columnName, value)
@@ -161,7 +161,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveOrBetween(builder, columnName, value) {
+  static resolveOrBetween(builder, columnName, value) {
     value = value.split('<>')
     builder.orWhere((orBuilder) => {
       orBuilder.where(columnName, '>', value[0].replace('|', ''))
@@ -170,7 +170,7 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveAndBetween(builder, columnName, value) {
+  static resolveAndBetween(builder, columnName, value) {
     value = value.split('<>')
     builder.where((andBuilder) => {
       andBuilder.where(columnName, '>', value[0])
@@ -179,33 +179,33 @@ class RamenQueryResolver {
     return builder
   }
 
-  resolveLike(builder, columnName, value) {
+  static resolveLike(builder, columnName, value) {
     builder.where(columnName, 'LIKE', value)
     return builder
   }
 
-  resolveWhereWithOperator(builder, operator, columnName, value) {
+  static resolveWhereWithOperator(builder, operator, columnName, value) {
     builder.where(columnName, operator, value)
     return builder
   }
 
-  resolveJson(builder, query, value) {
+  static resolveJson(builder, query, value) {
     query = query.substring(1, query.length-1)
     query += ' = ?'
     builder.whereRaw(query, value)
     return builder
   }
 
-  resolveLocale(builder, locale) {
+  static resolveLocale(builder, locale) {
     builder.whereRaw('locale->>\'' + locale + '\' IS NOT NULL')
     return builder
   }
 
-  async saveBelongsToManyRelations(genericModel, relationName, relationData) {
+  static async saveBelongsToManyRelations(genericModel, relationName, relationData) {
     await genericModel[relationName]().sync(relationData)
   }
 
-  async saveHasManyRelations(genericModel, relationName, relationData) {
+  static async saveHasManyRelations(genericModel, relationName, relationData) {
     let relationObjs = await genericModel[relationName]().fetch()
     if (relationObjs.rows.length == 0) {
       for (const relationalData of relationData) {
@@ -234,7 +234,7 @@ class RamenQueryResolver {
     return
   }
 
-  async saveHasOneRelations(genericModel, relationName, relationData) {
+  static async saveHasOneRelations(genericModel, relationName, relationData) {
     let relationObj = await genericModel[relationName]().fetch()
     if (!relationObj) {
         await genericModel[relationName]().create(relationData)
