@@ -1,5 +1,7 @@
 'use strict'
 
+const crypto = require('crypto')
+
 class RamenAuthUtil {
     static async basicAuthenticate(auth, model, email, password) {
         const credentials = await auth.withRefreshToken().attempt(email, password)
