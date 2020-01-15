@@ -42,6 +42,15 @@ class AuthController {
 
         let account = await this.model.createObject(request.body)
         if (account.error.message != null) {
+            if (account.error.code == 23505) {
+                return response.status(422).send({
+                    data: null,
+                    meta: {
+                        message: account.error.message
+                    }
+                })    
+            }
+
             return response.status(500).send({
                 data: null,
                 meta: {
@@ -69,6 +78,15 @@ class AuthController {
 
         let account = await this.model.createObject(decrypted)
         if (account.error.message != null) {
+            if (account.error.code == 23505) {
+                return response.status(422).send({
+                    data: null,
+                    meta: {
+                        message: account.error.message
+                    }
+                })    
+            }
+            
             return response.status(500).send({
                 data: null,
                 meta: {

@@ -39,7 +39,7 @@ class RamenModel {
         if (genericModel.id) {
           await genericModel.delete()
         }
-        return {error: {message: 'POSTGRESQL ERROR. ' + error.message}}
+        return {error: {code: error.code, message: 'POSTGRESQL ERROR. ' + error.message}}
       }
     }
 
