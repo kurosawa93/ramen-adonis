@@ -24,20 +24,7 @@ class AuthController {
     }
 
     async aesLogin({request, auth, response}) {
-        let encrypted = request.body.payload
-        encrypted = Buffer.from(encrypted, 'base64')
-        encrypted = encrypted.toString('utf8')
-        encrypted = JSON.parse(encrypted)
-
-        let iv = encrypted.iv
-        iv = Buffer.from(iv, 'base64')
-
-        const key = Buffer.from(Config._config.ramen.aesKey, 'base64')
-        const decryptor = crypto.createDecipheriv("aes-256-cbc", key, iv)
-        let decrypted = decryptor.update(encrypted.value, 'base64', 'utf8')
-        decrypted += decryptor.final('utf8')
-        decrypted = JSON.parse(decrypted)
-        
+        const decrypted = AuthUtil.decodePayload(Config._config.ramen.aesKey, request.body.payload)
         const account = await AuthUtil.basicAuthenticate(auth, this.model, decrypted.email, decrypted.password)
         return response.status(200).send({
             data: account,
@@ -49,6 +36,29 @@ class AuthController {
 
     async register({request, auth, response}) {
         let account = await this.model.createObject(request.body)
+        if (account.error.message != null) {
+            return response.status(500).send({
+                data: null,
+                meta: {
+                    message: account.error.message
+                }
+            })
+        }
+
+        const credentials = await TokenUtil.generateAuthToken(auth, account.data)
+        account.data.token = credentials.token
+        account.data.refresh_token = credentials.refreshToken
+        return response.status(200).send({
+            data: account.data,
+            meta: {
+                message: 'register is successfull'
+            }
+        })
+    }
+
+    async aesRegister({request, auth, response}) {
+        const decrypted = AuthUtil.decodePayload(Config._config.ramen.aesKey, request.body.payload)
+        let account = await this.model.createObject(decrypted)
         if (account.error.message != null) {
             return response.status(500).send({
                 data: null,

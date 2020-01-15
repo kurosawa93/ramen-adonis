@@ -117,6 +117,40 @@ class RamenForgotPasswordController {
             }
         })
     }
+
+    async resolveForgotPasswordAes({request, response}) {
+        const token = request.body.token
+        if (!token) {
+            return response.status(404).send({
+                data: null,
+                meta: {
+                    message: 'token not provided'
+                }
+            })
+        }
+
+        const accountModel = await TokenUtil.resolveForgotToken(token)
+        if (accountModel.error.code) {
+            return response.status(accountModel.error.code).send({
+                data: null,
+                meta: {
+                    message: accountModel.error.message
+                }
+            })
+        }
+
+        const decrypted = AuthUtil.decodePayload(Config._config.ramen.aesKey, request.body.payload)
+        accountModel.password = decrypted.password
+        await accountModel.save()
+        await TokenUtil.blacklistToken(accountModel)
+
+        return response.status(200).send({
+            data: accountModel,
+            meta: {
+                message: 'password successfully changed'
+            }
+        })
+    }
 }
 
 module.exports = RamenForgotPasswordController

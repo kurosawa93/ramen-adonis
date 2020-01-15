@@ -29,6 +29,22 @@ class RamenAuthUtil {
                 .subject('Forgot Password')
         })
     }
+
+    static decodePayload(aesKey, payload) {
+        let encrypted = Buffer.from(payload, 'base64')
+        encrypted = encrypted.toString('utf8')
+        encrypted = JSON.parse(encrypted)
+
+        let iv = encrypted.iv
+        iv = Buffer.from(iv, 'base64')
+
+        const key = Buffer.from(aesKey, 'base64')
+        const decryptor = crypto.createDecipheriv("aes-256-cbc", key, iv)
+        let decrypted = decryptor.update(encrypted.value, 'base64', 'utf8')
+        decrypted += decryptor.final('utf8')
+        decrypted = JSON.parse(decrypted)
+        return decrypted
+    }
 }
 
 module.exports = RamenAuthUtil

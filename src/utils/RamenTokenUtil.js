@@ -22,6 +22,17 @@ class RamenTokenUtil {
         }
     }
 
+    static async resolveForgotToken(forgotToken) {
+        const tokenResult = TokenUtil.decodeToken(forgotToken)
+        if (tokenResult.error.message) {
+            return {error: {code: 403, message: 'token is broken'}}
+        }
+
+        const accountId = tokenResult.data.sub
+        const accountModel = await this.model.findOrFail(accountId)
+        return {data: accountModel, error: {}}
+    }
+
     static async saveToken(accountObj, token) {
         return await accountObj.tokens().create({
             token: token,

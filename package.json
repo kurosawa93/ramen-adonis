@@ -1,5 +1,5 @@
 {
-  "name": "@ordent/ramen-adonis",
+  "name": "ramen-adonis",
   "version": "1.8.12",
   "description": "",
   "main": "index.js",
@@ -13,6 +13,10 @@
   ],
   "author": "Rachmat Priambudi <r.priambudi3@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ordentid/ramen-adonis"
+  },
   "devDependencies": {
     "@adonisjs/fold": "^4.0.9",
     "@adonisjs/ace": "^5.0.8"
