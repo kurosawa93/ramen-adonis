@@ -2,13 +2,13 @@
 
 const AuthUtil = require('../utils/RamenAuthUtil')
 const TokenUtil = require('../utils/RamenTokenUtil')
-const crypto = require('crypto')
 const Config = use('Adonis/Src/Config')
 
 class AuthController {
-    constructor(model, mail) {
+    constructor(model, mail, defaultRole = null) {
         this.model = model
         this.mail = mail
+        this.defaultRole = defaultRole
     }
 
     async login({request, auth, response}) {
@@ -35,6 +35,11 @@ class AuthController {
     }
 
     async register({request, auth, response}) {
+        const data = request.body
+        if (this.defaultRole && !data['roles']) {
+            data['roles'] = this.defaultRole
+        }
+
         let account = await this.model.createObject(request.body)
         if (account.error.message != null) {
             return response.status(500).send({
@@ -58,6 +63,10 @@ class AuthController {
 
     async aesRegister({request, auth, response}) {
         const decrypted = AuthUtil.decodePayload(Config._config.ramen.aesKey, request.body.payload)
+        if (this.defaultRole && !decrypted['roles']) {
+            decrypted['roles'] = this.defaultRole
+        }
+
         let account = await this.model.createObject(decrypted)
         if (account.error.message != null) {
             return response.status(500).send({
